@@ -4,6 +4,8 @@ import { nanoid } from 'nanoid';
 import { PhoneBookStyled } from './App.module';
 import { PropTypes } from 'prop-types';
 
+const LocalKey = 'Contacts';
+
 class PhoneBook extends Component {
   state = {
     contacts: [
@@ -15,6 +17,24 @@ class PhoneBook extends Component {
     filter: '',
   };
 
+  componentDidMount() {
+    let contactsLS = [];
+
+    if (localStorage.getItem(LocalKey)){
+      contactsLS = JSON.parse(localStorage.getItem(LocalKey));
+    }
+    if (contactsLS.length !== 0){
+      this.setState({contacts: [...contactsLS]})
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    
+    if(prevState.contacts !== this.state.contacts){
+      const contactsJSON = JSON.stringify(this.state.contacts);
+      localStorage.setItem(LocalKey, contactsJSON);
+    }
+  }
   addContact = (contact, number) => {
     let prevContacts = this.state.contacts.map(({ name }) =>
       name.toLocaleLowerCase()
